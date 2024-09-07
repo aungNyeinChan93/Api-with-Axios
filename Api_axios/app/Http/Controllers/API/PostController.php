@@ -15,7 +15,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = Post::orderBy("id", "asc")->get();
         return response()->json($posts, 200);
     }
 
@@ -57,6 +57,10 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $validator = $request->validate([
+            "title"=>"required",
+            "description"=>"required",
+        ]);
         $post = Post::find($id);
         $post->update(
             [
@@ -64,8 +68,7 @@ class PostController extends Controller
                 "description" => $request->description,
             ]
         );
-
-
+        return response()->json([$post,"msg"=>"Update Success!"], 200);
     }
 
     /**
@@ -73,6 +76,8 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        return Post::find($id)->delete();
+        $post =  Post::find($id);
+        $post->delete();
+        return response()->json([$post,"msg"=>"Delete success"],200);
     }
 }
